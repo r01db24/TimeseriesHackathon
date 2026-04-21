@@ -15,6 +15,9 @@
   <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
   <!-- Babel: lets us write JSX (HTML-like syntax inside JS) without a build step -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- antd: UI component library loaded from CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/antd@4/dist/antd.min.css">
+  <script src="https://unpkg.com/antd@4/dist/antd.min.js"></script>
 
   <style>
     body    { font-family: sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #f8fafc; color: #1e293b; }
@@ -32,12 +35,14 @@
   <!-- React mounts the entire app into this div, see below -->
   <div id="root"></div>
 
+  {% raw %}
   <!-- type="text/babel" tells Babel to transform this script before the browser runs it -->
   <script type="text/babel">
 
     // Pull out the hooks and chart components we need from the loaded libraries
     const { useState } = React;
     const { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+    const { Button } = antd;
 
     function App() {
 
@@ -84,9 +89,9 @@
           </label>
 
           {/* onClick wires the button to runModel(); disabled prevents double-clicking */}
-          <button onClick={runModel} disabled={loading}>
+          <Button id="button1" className="run-button" type="primary" shape="round" onClick={runModel} disabled={loading} style={{ marginLeft: '12px' }}>
             {loading ? "Running..." : "Run Model"}
-          </button>
+          </Button>
 
           {/* Only renders the error message if error is not null */}
           {error && <p className="error">{error}</p>}
@@ -134,5 +139,6 @@
     // Mount the App component into the <div id="root"> above
     ReactDOM.render(<App />, document.getElementById("root"));
   </script>
+  {% endraw %}
 </body>
 </html>
