@@ -1,0 +1,74 @@
+Becca
+- frontend/backend
+- model if need
+
+Jack
+- no frontend/backend
+- model yes
+
+Dominik
+- no frontend/backend if need be
+- model yes
+- earth observation data
+
+Yiyuan: 
+- frontend/backend 
+- model
+
+Georgie: 
+- team up with someone to do modelling
+
+John: 
+- frontend/backend
+
+
+Model: 
+- data
+- architecture
+
+
+
+
+Team 1: Modelling
+Jack, John
+
+Team 2: Frontend/Backend (+modelling if wanted)
+Yiyuan, Becca
+
+Team 3: Modelling
+Georgie, Dominik
+
+
+RQ: 
+(Does the amount of pesticide work as a good input for yield forecasting?)
+
++++++ Can we use temperature to help predict a countries rainfall, can this predicted data then
+be used as an input for a yield prediction model?
++++ Does a model trained on global data perform better at predicting country X's yield rather
+than a model trained only on country X?
+
+(Is the above effected by model choice?)
+...
+earth observation - soil type
+
+Jack, John, Domi, Georgie
+1. Different models (e.g. Jack & John implement LSTM/RNN/Markov Chains (causal inference), Domi XGBoost/RandomForest/Decision Trees)
+Libraries: scikit-learn, dowhy
+
+Domi: yearly vs. monthly
+Jack & John: 1. preprocessing, 2. modelling 
+Georgie: 1. modelling (XGBoost, RandomForest, )
+Jack = data_preprocess_A
+John = data_preprocess_B
+
+
+
+2.1. X = temperature, y = rainfall
+2.2.1. X = predicted rainfall, y = yield
+2.2.2. X = actual rainfall, y = yield
+
+Yiyuan, Becca
+Local: Continents (e.g. Europe)
+Global: Global
+1. X = actual rainfall, y = yield
+
