@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template, request
 import xgboost as xgb
 from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
+# from dataset_jack import 
 
 app = Flask(__name__)
 
@@ -19,6 +20,11 @@ def run_model():
 
     #Makes our test dataset
     X, y = make_regression(n_samples=200, n_features=5, noise=20, random_state=seed)
+    # X, y = preprocess_jack_temp()
+    # X, y = preprocess_jack_rain()
+    # X = Matrix (country, rainfall, temp, soil, pesticides)
+    # y = vector (timperiod (2010, 2011, 2012, ...), yield (5, 2, 8))
+    # y = vector (timperiod (2010, 2011, 2012, ...), rainfall (5, 2, 8))
     #split into test and train
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=seed)
 
