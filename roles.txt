@@ -54,10 +54,11 @@ earth observation - soil type
 Jack, John, Domi, Georgie
 1. Different models (e.g. Jack & John implement LSTM/RNN/Markov Chains (causal inference), Domi XGBoost/RandomForest/Decision Trees)
 Libraries: scikit-learn, dowhy
-
+Time-series models (AI model)
+NN no
 Domi: yearly vs. monthly
-Jack & John: 1. preprocessing, 2. modelling 
-Georgie: 1. modelling (XGBoost, RandomForest, )
+Jack & John: 1. preprocessing, 2. modelling (XGBoost, RandomForest, )
+Georgie: 1. modelling (XGBoost, RandomForest)
 Jack = data_preprocess_A
 John = data_preprocess_B
 
@@ -72,3 +73,4 @@ Local: Continents (e.g. Europe)
 Global: Global
 1. X = actual rainfall, y = yield
 
+docker compose up --build
