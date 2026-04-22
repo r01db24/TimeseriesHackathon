@@ -63,10 +63,20 @@ Jack = data_preprocess_A
 John = data_preprocess_B
 
 
-
+Focus (enough to satisfy Matt): 
 2.1. X = temperature, y = rainfall
+y_train/X_train = 1950 - 1999
+y_test/X_test = 2000- 2013
+RMSE: y_test vs. y_pred
+if yearly data: 13 timesteps on x axis
+if monthly data: 13 * 12 timesteps on x axis
+Rainfall on y axis, years/month & years on the x axis, specifically 2000 - 2013
+RMSE/MAE instead of accuracy because regression problem rather than classification
+
+Not focus:
 2.2.1. X = predicted rainfall, y = yield
-2.2.2. X = actual rainfall, y = yield
+2.2.2. X = actual rainfall, y = yield --> seperate model from 2.1, seperate plot on the website
+
 
 Yiyuan, Becca
 Local: Continents (e.g. Europe)
