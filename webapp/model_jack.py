@@ -4,10 +4,15 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
 import pandas as pd
+import numpy as np
 
 
-def run_model(X, y, df,  test_size = 0.3, seed = int(42),  max_depth = None):
-        
+def run_model(X_file, y_file, df_file,  test_size = 0.3, seed = int(42),  max_depth = None):
+    
+    X =  pd.read_csv(X_file,  header=None)
+    y = pd.read_csv(y_file,  header=None).values.ravel()
+    df = pd.read_csv(df_file)
+
     #Makes our test dataset
                            # n_samples=200, n_features=5, noise=20, seed = int(42)
     #X, y = make_regression(n_samples=n_samples, n_features=n_features, noise=noise, random_state=seed)
@@ -19,14 +24,28 @@ def run_model(X, y, df,  test_size = 0.3, seed = int(42),  max_depth = None):
     model.fit(X_train, y_train)
     preds = model.predict(X_test)
     
-    dictionary = {
-            #  "year": np.array([...]),    #Leave it empty if month dataset.
-            #  "month": np.array([...]), #Leave it empty if year dataset
-            #  "country": np.array([...]),
-            #  "actuals": np.array([...]),
-            #  "predictions": np.array([...],
-            # "temperature": np.array([...])))
-        }
+    if 'Date' in df : 
+        df = df.rename(columns = {'Date': 'year'})
+        df['month'] = np.empty(len(df.index))
+        
+    else:
+        df['year'] = np.array([])
+        
+        
+    
+    dictionary = {'year': df['year'].to_numpy(),
+           'month': df['month'].to_numpy(),
+           'country': str(df['Country']),
+           'actuals' : df['']
+           }
+    # dictionary = {
+    #          "year": np.array([1,2]),
+    #          "month": np.array([]),   #Leave it empty if year dataset
+    #          "country": np.array([]),
+    #          "actuals": np.array([]),
+    #          "predictions": np.array([]),
+    #         "temperature": np.array([])))
+    #     }
         
     
     #returns...
@@ -44,6 +63,5 @@ def run_model(X, y, df,  test_size = 0.3, seed = int(42),  max_depth = None):
 
 if __name__ == '__main__':
     
-    X_testfile =  pd.read_csv('testX.csv',  header=None).values
-    y_testfile = pd.read_csv('testy.csv',  header=None).values.ravel()
-    test = run_model(X = X_testfile, y = y_testfile, max_depth = None)
+    test = run_model('testX.csv', 'testy.csv', 'testdf.csv', max_depth = None)
+    
