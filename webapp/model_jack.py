@@ -3,15 +3,16 @@
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
+import pandas as pd
 
 
-
-def run_model(n_samples=200, n_features=5, noise=20, seed = int(42), max_depth = None):
+def run_model(X, y, test_size = 0.3, seed = int(42),  max_depth = None):
         
     #Makes our test dataset
-    X, y = make_regression(n_samples=n_samples, n_features=n_features, noise=noise, random_state=seed)
+                           # n_samples=200, n_features=5, noise=20, seed = int(42)
+    #X, y = make_regression(n_samples=n_samples, n_features=n_features, noise=noise, random_state=seed)
     #split into test and train
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=seed)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=seed)
     
     #Create, fit and run out model
     model = RandomForestRegressor(max_depth = max_depth, random_state=seed)
@@ -22,4 +23,7 @@ def run_model(n_samples=200, n_features=5, noise=20, seed = int(42), max_depth =
     
 
 if __name__ == '__main__':
-    test = run_model(max_depth = None)
+    
+    X_testfile =  pd.read_csv('testX.csv',  header=None)
+    y_testfile = pd.read_csv('testy.csv',  header=None)
+    test = run_model(X = X_testfile, y = y_testfile, max_depth = None)
