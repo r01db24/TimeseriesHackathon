@@ -11,7 +11,7 @@ def run_model(X_file, y_file, df_file,  test_size = 0.3, seed = int(42),  max_de
     
     X =  pd.read_csv(X_file,  header=None)
     y = pd.read_csv(y_file,  header=None).values.ravel()
-    df = pd.read_csv(df_file)
+    df = pd.read_csv(df_file, index_col=False)
 
     #Makes our test dataset
                            # n_samples=200, n_features=5, noise=20, seed = int(42)
@@ -24,19 +24,25 @@ def run_model(X_file, y_file, df_file,  test_size = 0.3, seed = int(42),  max_de
     model.fit(X_train, y_train)
     preds = model.predict(X_test)
     
+    
+    
+    
     if 'Date' in df : 
-        df = df.rename(columns = {'Date': 'year'})
-        df['month'] = np.empty(len(df.index))
+       year = df['Date'].to_numpy()
+       month = None
         
     else:
-        df['year'] = np.array([])
+        year = None
+        month = df['month'].to_numpy()
         
-        
+    country = str(df['Country'].to_numpy())
     
-    dictionary = {'year': df['year'].to_numpy(),
-           'month': df['month'].to_numpy(),
-           'country': str(df['Country']),
-           'actuals' : df['']
+    dictionary = {'year': year,
+           'month': month,
+           'country': country ,
+           'actuals' : y,
+           'predictions': preds,
+           'temperature': X[0].to_numpy()
            }
     # dictionary = {
     #          "year": np.array([1,2]),
