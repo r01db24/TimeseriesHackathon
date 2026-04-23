@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 
 
-def run_model(X, y, test_size = 0.3, seed = int(42),  max_depth = None):
+def run_model(X, y, df,  test_size = 0.3, seed = int(42),  max_depth = None):
         
     #Makes our test dataset
                            # n_samples=200, n_features=5, noise=20, seed = int(42)
@@ -19,7 +19,27 @@ def run_model(X, y, test_size = 0.3, seed = int(42),  max_depth = None):
     model.fit(X_train, y_train)
     preds = model.predict(X_test)
     
-    return preds
+    dictionary = {
+            #  "year": np.array([...]),    #Leave it empty if month dataset.
+            #  "month": np.array([...]), #Leave it empty if year dataset
+            #  "country": np.array([...]),
+            #  "actuals": np.array([...]),
+            #  "predictions": np.array([...],
+            # "temperature": np.array([...])))
+        }
+        
+    
+    #returns...
+    # {
+    #     "year": np.array([...]),    Leave it empty if month dataset.
+    #     "month": np.array([...]), Leave it empty if year dataset
+    #     "country": np.array([...]),
+    #     "actuals": np.array([...]),
+    #     "predictions": np.array([...],
+    #     "temperature": np.array([...])))
+    # }
+    
+    return dictionary
 
 
 if __name__ == '__main__':
