@@ -224,6 +224,37 @@ def data_median_val(folder = '..', value = ''):
 
 
 if __name__ == '__main__':
+    
+    st = ['rain','temp','pest','yield']
+    
+    zeros = []
+    remove = []
+    mean = []
+    median = []
+    for i in range (len(st)):
+       zeros.append(data_zeros(value = st[i]))
+       file = f'../zeros/{st[i]}_zeros.csv'
+       np.savetxt(file, zeros[i])
+       
+       remove.append(data_remove_rows(value = st[i]))
+       file_r = f'../remove/{st[i]}_remove.csv'
+       np.savetxt(file_r, remove[i])
+       
+       mean.append(data_mean_val(value = st[i]))
+       file_r = f'../mean/{st[i]}_mean.csv'
+       np.savetxt(file_r, mean[i])
+       
+       median.append(data_median_val(value = st[i]))
+       file_r = f'../median/{st[i]}_median.csv'
+       np.savetxt(file_r, median[i])
+       
+       
+
+       
+       
+        
+        
+        
 
 
     dataframes_aligned = align(dfs())
