@@ -20,10 +20,10 @@ def run_model(X, y, test_size = 0.3, seed = int(42),  max_depth = None):
     preds = model.predict(X_test)
     
     return preds
-    
+
 
 if __name__ == '__main__':
     
-    X_testfile =  pd.read_csv('testX.csv',  header=None)
-    y_testfile = pd.read_csv('testy.csv',  header=None)
+    X_testfile =  pd.read_csv('testX.csv',  header=None).values
+    y_testfile = pd.read_csv('testy.csv',  header=None).values.ravel()
     test = run_model(X = X_testfile, y = y_testfile, max_depth = None)
