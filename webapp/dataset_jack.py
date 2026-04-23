@@ -5,8 +5,9 @@ def dfs(folder = '..'):
     data_rain = to_df(folder+'/rainfall.csv')
     data_temp = to_df(folder+'/temp.csv')
     data_pest = to_df(folder + '/pesticides.csv')
-    data_yield = to_df(folder+ '/yield.csv')
-    dataframes = [data_rain, data_temp, data_pest, data_yield]
+    #data_yield = to_df(folder+ '/yield.csv')
+    #dataframes = [data_rain, data_temp, data_pest, data_yield]
+    dataframes = [data_rain, data_temp, data_pest]
     return dataframes
 
 def to_df(csv_path):
@@ -224,17 +225,54 @@ def data_median_val(folder = '..', value = ''):
 
 
 if __name__ == '__main__':
+    
+    #st = ['rain','temp','pest','yield']
+    st = ['rain','temp','pest']
+    zeros = []
+    remove = []
+    mean = []
+    median = []
+    A = data_median_val()
+    file_A = f'dataset.csv'
+    A.to_csv(file_A, index = False)
+ 
+    for i in range (len(st)):
+       zeros.append(data_zeros(value = st[i]))
+       file = f'../zeros/{st[i]}_zeros.csv'
+       np.savetxt(file, zeros[i])
+       
+       remove.append(data_remove_rows(value = st[i]))
+       file_r = f'../remove/{st[i]}_remove.csv'
+       np.savetxt(file_r, remove[i])
+       
+       mean.append(data_mean_val(value = st[i]))
+       file_r = f'../mean/{st[i]}_mean.csv'
+       np.savetxt(file_r, mean[i])
+       
+       median.append(data_median_val(value = st[i]))
+       file_r = f'../median/{st[i]}_median.csv'
+       np.savetxt(file_r, median[i])
+       
+       
+
+       
+       
+        
+        
+        
 
 
-    dataframes_aligned = align(dfs())
+    # dataframes_aligned = align(dfs())
 
-    nan_df = data_NaN(value = 'rain')
+    # nan_df = data_NaN(value = 'rain')
 
-    zero = data_zeros(value = 'temp')
-    removed = data_remove_rows()
+    # zero = data_zeros(value = 'temp')
+    
+    
+    # removed = data_remove_rows()
 
-    mean = data_mean_val(value = 'yield')
+    # mean = data_mean_val(value = 'yield')
 
-    median = data_median_val(value = 'pest')
+    # median = data_median_val(value = 'pest')
 
 
