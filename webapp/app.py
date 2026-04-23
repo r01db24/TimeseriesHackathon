@@ -1,3 +1,4 @@
+from ast import mod
 import os
 import numpy as np
 import pandas as pd
@@ -49,6 +50,11 @@ def handel_request():
     preprocessor = request.args.get("preprocessor", "Remove NA") # Just remove NA for now
 
     # Dataset switch.
+    if dataset is "Yearly":
+        dataset = "Year Dataset"
+    elif dataset is "Monthly":
+        dataset = "Month Dataset"
+        
     if dataset is "Year Dataset":
         dataset_folder = "year"
     elif dataset is "Month Dataset":
@@ -126,6 +132,11 @@ def handel_request():
     mae = mean_absolute_error(actuals, predictions)
     rmse = np.sqrt(mean_squared_error(actuals, predictions))
 
+    if dataset == "Year Dataset":
+        model_output["month"] = np.array([None] * len(model_output["predictions"]))
+    elif dataset == "Month Dataset":
+        model_output["year"] = np.array([None] * len(model_output["predictions"]))
+        
     return jsonify({
         "dataset": dataset,
         "model_name": model,
