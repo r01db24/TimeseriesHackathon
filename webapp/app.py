@@ -135,6 +135,7 @@ def handel_request():
         "country": np.asarray(model_output["country"]).tolist(),
         "actuals": actuals.tolist(),
         "predictions": predictions.tolist(),
+        "temperature": np.asarray(model_output["temperature"]).tolist(),
         "metrics": {
             "mae": float(mae),
             "rmse": float(rmse),
