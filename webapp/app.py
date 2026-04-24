@@ -52,14 +52,14 @@ def handel_request():
     preprocessor = request.args.get("preprocessor", "Remove NA") # Just remove NA for now
 
     # Dataset switch.
-    if dataset is "Yearly":
+    if dataset == "Yearly":
         dataset = "Year Dataset"
-    elif dataset is "Monthly":
+    elif dataset == "Monthly":
         dataset = "Month Dataset"
         
-    if dataset is "Year Dataset":
+    if dataset == "Year Dataset":
         dataset_folder = "year"
-    elif dataset is "Month Dataset":
+    elif dataset == "Month Dataset":
         dataset_folder = "month"
     else:
         # Unknown dataset return HTTP 400.
