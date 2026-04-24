@@ -225,7 +225,7 @@
                       tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}
                     />
                     <Tooltip />
-                    <Legend />
+                    <Legend verticalAlign="bottom" wrapperStyle={{ paddingTop: 35 }} />
                     <Line
                       type="monotone"
                       dataKey="actual"
