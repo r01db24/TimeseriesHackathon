@@ -1,142 +1,260 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>XGBoost Runner</title>
-
+  <title>Group 2 Hackathon</title>
 
   <!-- Imports -->
-  <!-- React:  UI library that automatically updates the page when data changes -->
   <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-  <!-- ReactDOM:  part of React that connects to the browser's DO, to let us now the inputs happened  -->
   <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-  <!-- prop-types: required by Recharts, must be loaded before it -->
   <script src="https://unpkg.com/prop-types@15/prop-types.min.js"></script>
-  <!-- Recharts: pinned to 2.1.16 which is stable with React 17 -->
   <script src="https://unpkg.com/recharts@2.1.16/umd/Recharts.js"></script>
-  <!-- Babel: lets us write JSX (HTML-like syntax inside JS) without a build step -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- antd: UI component library loaded from CDN -->
   <link rel="stylesheet" href="https://unpkg.com/antd@4/dist/antd.min.css">
   <script src="https://unpkg.com/antd@4/dist/antd.min.js"></script>
 
   <style>
-    body    { font-family: sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #f8fafc; color: #1e293b; }
-    button  { padding: 10px 24px; font-size: 16px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    .error  { color: red; }
-    .seed-input { width: 80px; margin-right: 12px; padding: 8px; font-size: 16px; }
-  </style>
+    html{
+      border-left: 24px solid #059546;
+     border-right: 24px solid #059546;
+     min-height: 100vh;
+     box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      background: #d6e4ff;
+      color: #1e293b;
+    }
 
+    /* Header */
+    .app-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #059546;
+      margin: 0 0 2px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .app-subtitle {
+      color: #495a72;
+      margin: 0 0 50px 0;
+      font-size: 15px;
+    }
+
+    /* Dropdown row */
+    .controls-row {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .control-label {
+      font-size: 16px;
+      color: #07ab51;
+      font-weight: bold;
+    }
+    /* Chart card */
+    .chart-card {
+      background: white;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    .chart-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #7a42b7;
+      margin: 0 0 4px 0;
+    }
+    .chart-subtitle {
+      font-size: 13px;
+      color: #64748b;
+      margin: 0 0 16px 0;
+    }
+    .go-button {
+      font-weight: bold !important;
+      background-color: #0b87e0 !important;
+      border-color: #0b87e0 !important;
+     color: white !important;
+    }
+
+    .go-button:hover,
+    .go-button:focus {
+      background-color: #1d4ed8 !important;
+      border-color: #1d4ed8 !important;
+      color: white !important;
+    }
+
+    .go-button:disabled,
+    .go-button:disabled:hover {
+     background-color: #cbd5e1 !important;
+     border-color: #cbd5e1 !important;
+     color: #64748b !important;
+    }
+
+    .error { color: #dc2626; margin-top: 12px; }
+  </style>
 </head>
 
-
 <body>
-
-  <!-- React mounts the entire app into this div, see below -->
   <div id="root"></div>
 
   {% raw %}
-  <!-- type="text/babel" tells Babel to transform this script before the browser runs it -->
   <script type="text/babel">
-
-    // Pull out the hooks and chart components we need from the loaded libraries
     const { useState } = React;
-    const { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
-    const { Button } = antd;
+    const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+    const { Button, Dropdown } = antd;
 
     function App() {
+      const [results, setResults]   = useState([]);
+      const [loading, setLoading]   = useState(false);
+      const [error, setError]       = useState(null);
+      const [selected, setSelected] = useState("Select Model");
+      const [period, setPeriod]     = useState("Select Data");
+      const [metrics, setMetrics]   = useState(null);
 
-      // useState holds values that, when changed, cause React to re-render the page
-      // Each returns [currentValue, functionToUpdateIt]
-      const [results, setResults]         = useState([]);    // predictions vs actuals from the model
-      const [importances, setImportances] = useState([]);    // feature importance scores
-      const [loading, setLoading]         = useState(false); // true while waiting for the server
-      const [error, setError]             = useState(null);  // holds an error message if fetch fails
-      const [seed, setSeed]               = useState(42);    // random seed for data generation and model
-
-      // This function runs when the button is clicked
-      // It calls the Flask /run route and stores the response in state
       async function runModel() {
-        setLoading(true);  // disables the button while running
-        setError(null);    // clear any previous error
+        setLoading(true);
+        setError(null);
         try {
-          const res  = await fetch(`/run?seed=${seed}`); // call the Flask backend, passing the seed
-          const data = await res.json();           // parse the JSON response
-          setResults(data.results);                // store predictions vs actuals
-          setImportances(data.importances);        // store feature importances
+          const res  = await fetch(`/run?model=${encodeURIComponent(selected)}&dataset=${encodeURIComponent(period)}`);
+          const data = await res.json();
+
+          if (!res.ok) {
+            setError(data.error || `Request failed: HTTP ${res.status}`);
+            return;
+          }
+
+            const chartData = data.actuals.map((actual, i) => ({
+              index: i,
+              label: `${data.year[i]}-${String(data.month[i]).padStart(2, '0')} ${data.country[i]}`,
+             actual: actual,
+             predicted: data.predictions[i],
+          }));
+          setResults(chartData);
+          setMetrics(data.metrics);
         } catch (e) {
-          setError("Failed to run model. Is the Flask server running?");
+          setError("Failed to run model.");
         } finally {
-          setLoading(false); // re-enable the button whether it succeeded or failed
+          setLoading(false);
         }
       }
 
-      // JSX this looks like HTML but is transformed by Babel into JavaScript (blah blah blah)
-      // React re-renders this whenever there is a state change
       return (
         <div>
-          <h1>XGBoost Model Runner</h1>
-          <p>Trains an XGBoost regressor on synthetic data and plots the results.</p>
+          {/* Header */}
+          <h1 className="app-title">Group 2 Hackathon</h1>
+          <p className="app-subtitle">Comparing different models for predicting rainfall based on temperature</p>
 
-          {/* Number input — onChange updates the seed state as the user types */}
-          <label>
-            Seed: <input
-              type="number"
-              value={seed}
-              onChange={e => setSeed(e.target.value)}
-              className="seed-input"
-            />
-          </label>
+          {/* Controls */}
+          <div className="controls-row">
+            <div className="control-group">
+              <span className="control-label">Model</span>
+              <Dropdown
+                overlay={
+                  <antd.Menu onClick={({ key }) => setSelected(key)}>
+                    <antd.Menu.Item key="Jack Model">Jack Model</antd.Menu.Item>
+                    <antd.Menu.Item key="Domi Model">Domi Model</antd.Menu.Item>
+                    <antd.Menu.Item key="Test Model">Test Model</antd.Menu.Item>
+                  </antd.Menu>
+                }
+              >
+                <Button style={{ borderRadius: '8px' , minWidth: 200, textAlign: 'left' }}>{selected}</Button>
+              </Dropdown>
+            </div>
 
-          {/* onClick wires the button to runModel(); disabled prevents double-clicking */}
-          <Button id="button1" className="run-button" type="primary" shape="round" onClick={runModel} disabled={loading} style={{ marginLeft: '12px' }}>
-            {loading ? "Running..." : "Run Model"}
-          </Button>
+            <div className="control-group">
+              <span className="control-label">Dataset</span>
+              <Dropdown
+                overlay={
+                  <antd.Menu onClick={({ key }) => setPeriod(key)}>
+                    <antd.Menu.Item key="Month Dataset">Monthly</antd.Menu.Item>
+                    <antd.Menu.Item key="Year Dataset">Yearly</antd.Menu.Item>
+                  </antd.Menu>
+                }
+              >
+                <Button style={{ borderRadius: '8px' ,minWidth: 200, textAlign: 'left' }}>{period}</Button>
+              </Dropdown>
+            </div>
 
-          {/* Only renders the error message if error is not null */}
+            <Button
+              type="primary"
+              shape="round"
+              className="go-button"
+              onClick={runModel}
+              disabled={loading || selected === "Select Model" || period === "Select Data" }
+            >
+              {loading ? "Running..." : "GO!"}
+            </Button>
+          </div>
+
           {error && <p className="error">{error}</p>}
 
-          {/* Only renders the charts once results have been loaded */}
-          {results.length > 0 && (
-            <div>
+            {results.length > 0 && (
+              <div>
+              {/* Chart */}
+              <div className="chart-card">
+                <h2 className="chart-title">Predictions vs Actuals</h2>
+                <ResponsiveContainer width="100%" height={380}>
+                  <LineChart data={results} margin={{ top: 10, right: 20, bottom: 40, left: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="label"
+                      angle={-45}
+                      textAnchor="end"
+                      height={60}
+                      tick={{ fontSize: 11, fill: '#64748b' }}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11, fill: '#64748b' }}
+                      tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}
+                    />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="actual"
+                      name="Actual"
+                      stroke="#f5316c"
+                      strokeWidth={2}
+                      dot={{ r: 3, fill: '#f5316c' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="predicted"
+                      name="Predicted"
+                      stroke="#26dc5a"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      dot={{ r: 3, fill: '#26dc5a' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
 
-              <h2>Predictions vs Actuals</h2>
-              {/* ResponsiveContainer makes the chart fill its parent width */}
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={results}>
-                  <CartesianGrid strokeDasharray="3 3" />  {/* background grid */}
-                  <XAxis dataKey="index" />                {/* x axis uses the "index" field */}
-                  <YAxis />
-                  <Tooltip />                              {/* shows values on hover */}
-                  <Legend />                               {/* colour key */}
-                  {/* dataKey matches the field names returned by Flask */}
-                  <Line type="monotone" dataKey="actual"    stroke="#2563eb" dot={false} strokeWidth={2} />
-                  <Line type="monotone" dataKey="predicted" stroke="#f97316" dot={false} strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-
-              <h2>Feature Importances</h2>
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={importances}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="feature" />              {/* x axis uses the "feature" field */}
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="importance" fill="#2563eb" />
-                </BarChart>
-              </ResponsiveContainer>
-
+                {metrics && (
+                  <p style={{ marginTop: 16, color: '#3d75c4', fontSize: 14 }}>
+                    <strong>MAE:</strong> {metrics.mae.toFixed(3)} &nbsp;|&nbsp;
+                    <strong>RMSE:</strong> {metrics.rmse.toFixed(3)}
+                  </p>
+                )}
+              </div>
             </div>
-            
-            
-          )}
-
-        </div>
-        
+          
+        )}</div>
       );
     }
 
-    // Mount the App component into the <div id="root"> above
     ReactDOM.render(<App />, document.getElementById("root"));
   </script>
   {% endraw %}

@@ -1,23 +1,22 @@
 #Random Forest Regressor model
 
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 
 
-def run_model(X_file, y_file, df_file,  test_size = 0.3, seed = int(42),  max_depth = None):
-    
-    X =  pd.read_csv(X_file,  header=None)
-    y = pd.read_csv(y_file,  header=None).values.ravel()
-    df = pd.read_csv(df_file, index_col=False)
+def run_model(X, y, df,  test_size = 0.3, seed = int(42),  max_depth = None):
+    X = X.copy()
+    y = y.squeeze("columns").to_numpy()
+    df = df.copy()
 
     #Makes our test dataset
                            # n_samples=200, n_features=5, noise=20, seed = int(42)
     #X, y = make_regression(n_samples=n_samples, n_features=n_features, noise=noise, random_state=seed)
     #split into test and train
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=seed)
+    test_indices = X_test.index
     
     #Create, fit and run out model
     model = RandomForestRegressor(max_depth = max_depth, random_state=seed)
@@ -27,22 +26,29 @@ def run_model(X_file, y_file, df_file,  test_size = 0.3, seed = int(42),  max_de
     
     
     
-    if 'Date' in df : 
-       year = df['Date'].to_numpy()
-       month = None
+    if len(df) == len(X):
+        df_test = df.loc[test_indices]
+    else:
+        # Some current X/y files are not row-aligned with dataset.csv.
+        # Use a positional fallback so the backend can still return metadata.
+        df_test = df.iloc[np.asarray(test_indices) % len(df)]
+
+    if 'Date' in df.columns: 
+       year = df_test['Date'].to_numpy()
+       month = np.array([None] * len(preds), dtype=object)
         
     else:
-        year = None
-        month = df['month'].to_numpy()
+        year = np.array([None] * len(preds), dtype=object)
+        month = df_test['month'].to_numpy()
         
-    country = str(df['Country'].to_numpy())
+    country = df_test['Country'].to_numpy()
     
     dictionary = {'year': year,
            'month': month,
            'country': country ,
-           'actuals' : y,
-           'predictions': preds,
-           'temperature': X[0].to_numpy()
+           'actuals' : y_test,
+           'predictions': preds,     
+           'temperature': X_test.iloc[:, 0].to_numpy()
            }
     # dictionary = {
     #          "year": np.array([1,2]),
@@ -68,6 +74,8 @@ def run_model(X_file, y_file, df_file,  test_size = 0.3, seed = int(42),  max_de
 
 
 if __name__ == '__main__':
-    
-    test = run_model('testX.csv', 'testy.csv', 'testdf.csv', max_depth = None)
+    test_X = pd.read_csv('testX.csv')
+    test_y = pd.read_csv('testy.csv')
+    test_df = pd.read_csv('testdf.csv')
+    test = run_model(test_X, test_y, test_df, max_depth = None)
     

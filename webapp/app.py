@@ -75,7 +75,7 @@ def handel_request():
     #
     #   y.csv       = the target labels for this dataset/preprocessor.
     if preprocessor == "Remove NA":
-        preprocessor_folder = "remove_na"
+        preprocessor_folder = "remove"
     else:
         # Unknown preprocessor name return HTTP 400.
         return jsonify({
@@ -83,7 +83,7 @@ def handel_request():
         }), 400
 
     # Build the three CSV path.
-    csv_folder = os.path.join(BASE_DIR, "datasets", dataset_folder, preprocessor_folder)
+    csv_folder = os.path.join(BASE_DIR, dataset_folder, preprocessor_folder)
     dataset_path = os.path.join(csv_folder, "dataset.csv")
     x_path = os.path.join(csv_folder, "X.csv")
     y_path = os.path.join(csv_folder, "y.csv")
