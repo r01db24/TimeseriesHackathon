@@ -150,8 +150,6 @@ def handel_request():
 
     if dataset == "Year Dataset":
         model_output["month"] = np.array([None] * len(model_output["predictions"]))
-    elif dataset == "Month Dataset":
-        model_output["year"] = np.array([None] * len(model_output["predictions"]))
         
     return jsonify({
         "dataset": dataset,
