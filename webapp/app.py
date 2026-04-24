@@ -32,6 +32,8 @@ app = Flask(__name__)
 #
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+DOMI_DATA_FILE = "df_United_Kingdom_monthly_rainfall_1950_2013.csv"
 
 # This route "/" is the default page, this will run when the browerser runs the URL
 @app.route("/")
@@ -95,7 +97,10 @@ def handel_request():
     if model == "Jack Model":
         run_model = run_model_jack
     elif model == "Domi Model":
-        df_raw = pd.read_csv(os.path.join(BASE_DIR, "df_United_Kingdom_monthly_rainfall_1950_2013.csv"), header=0)
+        domi_data_path = os.path.join(APP_DIR, DOMI_DATA_FILE)
+        if not os.path.exists(domi_data_path):
+            domi_data_path = os.path.join(BASE_DIR, DOMI_DATA_FILE)
+        df_raw = pd.read_csv(domi_data_path, header=0)
         mode = "yearly" if dataset == "Year Dataset" else "monthly"
         df_processed = yearly_or_monthly(df_raw, timefact=mode)
         target_col = "yearly_rainfall_mm" if mode == "yearly" else "monthly_rainfall_mm"

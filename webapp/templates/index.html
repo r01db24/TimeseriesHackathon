@@ -120,15 +120,15 @@
       const [results, setResults]   = useState([]);
       const [loading, setLoading]   = useState(false);
       const [error, setError]       = useState(null);
-      const [selected, setSelected] = useState("Select Model");
-      const [period, setPeriod]     = useState("Select Data");
+      const [selected, setSelected] = useState("Domi Model");
+      const [period, setPeriod]     = useState("Year Dataset");
       const [metrics, setMetrics]   = useState(null);
 
       async function runModel() {
         setLoading(true);
         setError(null);
         try {
-          const res  = await fetch(`/run?model=${encodeURIComponent(selected)}&dataset=${encodeURIComponent(period)}`);
+          const res  = await fetch(`/run?model=${encodeURIComponent(selected)}&dataset=${encodeURIComponent(period)}&preprocessor=${encodeURIComponent("Remove NA")}`);
           const data = await res.json();
 
           if (!res.ok) {
@@ -138,7 +138,11 @@
 
             const chartData = data.actuals.map((actual, i) => ({
               index: i,
-              label: `${data.year[i]}-${String(data.month[i]).padStart(2, '0')} ${data.country[i]}`,
+              label: data.month[i] == null
+                ? `${data.year[i]} ${data.country[i]}`
+                : data.year[i] == null
+                  ? `${data.month[i]} ${data.country[i]}`
+                  : `${data.year[i]}-${String(data.month[i]).padStart(2, '0')} ${data.country[i]}`,
              actual: actual,
              predicted: data.predictions[i],
           }));
