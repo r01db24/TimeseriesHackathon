@@ -12,6 +12,8 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 # TODO： Wait for this entrypoint to be implemented in model_?.py and then import it here
 from model_jack import run_model as run_model_jack
+from model_domi import yearly_or_monthly
+from model_domi import run_model as run_model_domi
 
 app = Flask(__name__)
 
@@ -92,6 +94,14 @@ def handel_request():
     #
     if model == "Jack Model":
         run_model = run_model_jack
+    elif model == "Domi Model":
+        df_raw = pd.read_csv(os.path.join(BASE_DIR, "df_United_Kingdom_monthly_rainfall_1950_2013.csv"), header=0)
+        mode = "yearly" if dataset == "Year Dataset" else "monthly"
+        df_processed = yearly_or_monthly(df_raw, timefact=mode)
+        target_col = "yearly_rainfall_mm" if mode == "yearly" else "monthly_rainfall_mm"
+        X_input = df_processed["avg_temp"].values
+        y_input = df_processed[target_col].values
+        model_output = run_model_domi(X=X_input, y=y_input, df=df_processed, window_size=3)
     elif model == "Test Model":
         # ! Hey, this is not implemented yet.
         return jsonify({
@@ -103,16 +113,17 @@ def handel_request():
             "error": f"OOOOOOOOOOOOOOOps! Unsupported model????: {model}"
         }), 400
 
-    # Load the three CSV files selected by dataset + preprocessor.
-    df = pd.read_csv(dataset_path)
-    X = pd.read_csv(x_path)
-    y = pd.read_csv(y_path)
+    if model != "Domi Model":
+        # Load the three CSV files selected by dataset + preprocessor.
+        df = pd.read_csv(dataset_path)
+        X = pd.read_csv(x_path)
+        y = pd.read_csv(y_path)
 
-    # !!! Every model should expose the same entrypoint shape, PLEASE!
-    #
-    #   run_model(X: pd.DataFrame, y: pd.DataFrame, df: pd.DataFrame) -> dict
-    #
-    model_output = run_model(X, y, df)
+        # !!! Every model should expose the same entrypoint shape, PLEASE!
+        #
+        #   run_model(X: pd.DataFrame, y: pd.DataFrame, df: pd.DataFrame) -> dict
+        #
+        model_output = run_model(X, y, df)
 
     # Expected model output:
     #
@@ -146,7 +157,7 @@ def handel_request():
         "country": np.asarray(model_output["country"]).tolist(),
         "actuals": actuals.tolist(),
         "predictions": predictions.tolist(),
-        "temperature": np.asarray(model_output["temperature"]).tolist(),
+        "temperature": np.asarray(model_output.get("temperature", [])).tolist(),
         "metrics": {
             "mae": float(mae),
             "rmse": float(rmse),
